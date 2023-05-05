@@ -47,22 +47,9 @@
                                 {{ $role->name }}
                             </th>
                             <th class="py-4 px-6">
-                                <button id="showPerIcon" onclick="PermissionShow('show', '')" type="button"
-                                    data-tooltip-target="show-button" data-bs-toggle="tooltip" data-bs-placement="top">
-                                    <x-svg.eye class="w-6 h-6 text-pink-400" />
-                                </button>
-                                <button class="hidden" id="hidePerIcon" onclick="PermissionShow('hide', '')"
-                                    type="button" data-tooltip-target="hide-button" data-bs-toggle="tooltip"
-                                    data-bs-placement="top">
-                                    <x-svg.eye-off class="w-6 h-6 text-pink-400" />
-                                </button>
-                                <div id="permission" class="hidden grid grid-cols-6 gap-1 text-center">
-                                    @foreach ($role->permissions as $item)
-                                    <div class="bg-green-500 text-white p-1 rounded font-bold">
-                                        {{ $item->name }}
-                                    </div>   
-                                    @endforeach
-                                </div>
+                                @foreach ($role->permissions as $item)
+                                    {{ $item->name }} 
+                                @endforeach
                             </th>
                             <td class="py-4 px-6 flex gap-2">
                                 <a data-tooltip-target="edit-button" data-bs-toggle="tooltip" data-bs-placement="top"

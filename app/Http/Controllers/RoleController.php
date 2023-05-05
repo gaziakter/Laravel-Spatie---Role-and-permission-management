@@ -82,8 +82,10 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-
-        return view('role.edit');
+        $permissions = Permission::all();
+        $roles = Role::with('permissions')->find($id);
+        $data = $roles->permissions()->pluck('id')->toArray();
+        return view('role.edit', compact(['permissions', 'roles', 'data']));
     }
 
     /**
@@ -93,20 +95,23 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($request, $id)
+    public function update(Request $request, Role $role)
     {
-       // abort_if(!userCan('role.update'), 403);
+        $request->validate([
+            'name' => 'required'
+        ]);
 
-        try {
-            UpdateRole::update($request, $role);
+        $role->update([
+            'name' => $request->name
+        ]);
 
-            Toastr::success('success', 'Role Updated!');
-            return back();
-        } catch (\Throwable $th) {
 
-            Toastr::error('Error', 'Something is wrong');
-            return back();
-        }
+        $permissions = $request->permissions;
+        $role->syncPermissions($permissions);
+
+        session()->flash('success', 'Role Updated successfully');
+        return redirect()->route('roles.index');
+
     }
 
     /**
@@ -116,19 +121,9 @@ class RoleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Role $role)
-    {
-        //abort_if(!userCan('role.delete'), 403);
-
-        try {
-            if (!is_null($role)) {
-                $role->delete();
-            }
-
-            session()->flash('success', 'Role Deleted!');
-            return back();
-        } catch (\Throwable $th) {
-            session()->flash('Error', 'Something is wrong');
-            return back();
-        }
+    {   
+        $role->delete();
+        session()->flash('success', 'Role deleted successfully');
+        return redirect()->route('roles.index');
     }
 }
